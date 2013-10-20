@@ -87,6 +87,9 @@ static const struct tr_option options[] =
   { 'm', "portmap",              "Enable portmapping via NAT-PMP or UPnP", "m",  0, NULL },
   { 'M', "no-portmap",           "Disable portmapping", "M",  0, NULL },
   { 'p', "port", "Port for incoming peers (Default: " TR_DEFAULT_PEER_PORT_STR ")", "p", 1, "<port>" },
+  { 500, "sequential-order",     "Download torrent sequentially", "seq", 0, NULL },
+  { 501, "random-order",         "Download torrent randomly", "rnd", 0, NULL },
+  { 502, "sequential-mask",      "Sequential only for these filemasks", "seq-mask", 1, "<mask>" },
   { 't', "tos", "Peer socket TOS (0 to 255, default=" TR_DEFAULT_PEER_SOCKET_TOS_STR ")", "t", 1, "<tos>" },
   { 'u', "uplimit",              "Set max upload speed in "SPEED_K_STR, "u",  1, "<speed>"   },
   { 'U', "no-uplimit",           "Don't limit the upload speed", "U",  0, NULL        },
@@ -231,6 +234,7 @@ main (int argc, char ** argv)
   uint8_t     * fileContents;
   size_t        fileLength;
   const char  * str;
+  bool          boolVal;
   char          buf[TR_PATH_MAX];
 
   tr_formatter_mem_init (MEM_K, MEM_K_STR, MEM_M_STR, MEM_G_STR, MEM_T_STR);
@@ -320,6 +324,9 @@ main (int argc, char ** argv)
       tr_sessionClose (h);
       return EXIT_FAILURE;
     }
+
+  if (tr_bencDictFindBool (&settings, "sequentialOrder", &boolVal))
+      tr_torrentSetSequentialOrder (tor, boolVal);
 
   signal (SIGINT, sigHandler);
 #ifndef WIN32
@@ -457,6 +464,25 @@ parseCommandLine (tr_benc * d, int argc, const char ** argv)
           case 'w':
             tr_bencDictAddStr (d, TR_PREFS_KEY_DOWNLOAD_DIR, optarg);
             break;
+
+          case 500:
+            tr_bencDictAddBool (d, "sequentialOrder", true);
+            break;
+
+          case 501:
+            tr_bencDictAddBool (d, "sequentialOrder", false);
+            break;
+
+          case 502: {
+            static const char* delims = ";";
+            tr_benc * l = tr_bencDictAddList (d, "sequentialMask", 1);
+            char * arg = tr_strdup (optarg);
+            for (char * mask = strtok(arg, delims); mask; mask = strtok(NULL, delims)) {
+              tr_bencListAddStr (l, mask);
+            }
+            tr_free (arg);
+            break;
+          }
 
           case 910:
             tr_bencDictAddInt (d, TR_PREFS_KEY_ENCRYPTION, TR_ENCRYPTION_REQUIRED);

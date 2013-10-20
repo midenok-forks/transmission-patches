@@ -101,8 +101,8 @@ am_libtransmission_a_OBJECTS = announcer.$(OBJEXT) \
 	torrent-magnet.$(OBJEXT) tr-dht.$(OBJEXT) tr-lpd.$(OBJEXT) \
 	tr-udp.$(OBJEXT) tr-utp.$(OBJEXT) tr-getopt.$(OBJEXT) \
 	trevent.$(OBJEXT) upnp.$(OBJEXT) utils.$(OBJEXT) \
-	verify.$(OBJEXT) web.$(OBJEXT) webseed.$(OBJEXT) \
-	wildmat.$(OBJEXT)
+	utils2.$(OBJEXT) verify.$(OBJEXT) web.$(OBJEXT) \
+	webseed.$(OBJEXT) wildmat.$(OBJEXT)
 libtransmission_a_OBJECTS = $(am_libtransmission_a_OBJECTS)
 am__EXEEXT_1 = bitfield-test$(EXEEXT) blocklist-test$(EXEEXT) \
 	bencode-test$(EXEEXT) clients-test$(EXEEXT) \
@@ -487,6 +487,7 @@ libtransmission_a_SOURCES = \
     trevent.c \
     upnp.c \
     utils.c \
+    utils2.c \
     verify.c \
     web.c \
     webseed.c \
@@ -748,6 +749,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/upnp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/web.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/webseed.Po@am__quote@

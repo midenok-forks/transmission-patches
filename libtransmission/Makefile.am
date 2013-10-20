@@ -62,6 +62,7 @@ libtransmission_a_SOURCES = \
     trevent.c \
     upnp.c \
     utils.c \
+    utils2.c \
     verify.c \
     web.c \
     webseed.c \

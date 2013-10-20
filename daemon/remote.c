@@ -291,6 +291,8 @@ static tr_option opts[] =
     { 954, "no-global-seedratio",    "All torrents, unless overridden by a per-torrent setting, should seed regardless of ratio", "GSR", 0, NULL },
     { 710, "tracker-add",            "Add a tracker to a torrent", "td", 1, "<tracker>" },
     { 712, "tracker-remove",         "Remove a tracker from a torrent", "tr", 1, "<trackerId>" },
+    { 500, "sequential-order",       "Download torrent sequentially", "seq", 0, NULL },
+    { 501, "random-order",           "Download torrent randomly", "rnd", 0, NULL },
     { 's', "start",                  "Start the current torrent (s)", "s",  0, NULL },
     { 'S', "stop",                   "Stop the current torrent (s)", "S",  0, NULL },
     { 't', "torrent",                "Set the current torrent (s)", "t",  1, "<torrent>" },
@@ -415,6 +417,8 @@ getOptMode (int val)
         case 952: /* no-seedratio */
         case 984: /* honor-session */
         case 985: /* no-honor-session */
+        case 500: /* sequential-order */
+        case 501: /* random-order */
             return MODE_TORRENT_SET;
 
         case 920: /* session-info */
@@ -2135,6 +2139,10 @@ processArgs (const char * rpcurl, int argc, const char ** argv)
                 case 984: tr_bencDictAddBool (args, "honorsSessionLimits", true);
                           break;
                 case 985: tr_bencDictAddBool (args, "honorsSessionLimits", false);
+                          break;
+                case 500: tr_bencDictAddBool (args, "sequentialOrder", true);
+                          break;
+                case 501: tr_bencDictAddBool (args, "sequentialOrder", false);
                           break;
                 default:  assert ("unhandled value" && 0);
                           break;

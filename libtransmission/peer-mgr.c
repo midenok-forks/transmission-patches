@@ -1024,7 +1024,7 @@ pieceListSort (Torrent * t, enum piece_sort_state state)
 static void
 assertWeightedPiecesAreSorted (Torrent * t)
 {
-    if (!t->endgame)
+    if (!t->endgame && !t->tor->sequentialOrder)
     {
         int i;
         setComparePieceByWeightTorrent (t);
@@ -1129,7 +1129,11 @@ pieceListRebuild (Torrent * t)
         t->pieces = pieces;
         t->pieceCount = pieceCount;
 
-        pieceListSort (t, PIECES_SORTED_BY_WEIGHT);
+        if (t->tor->sequentialOrder)
+            // FIXME: is it necessary here?
+            pieceListSort (t, PIECES_SORTED_BY_INDEX);
+        else
+            pieceListSort (t, PIECES_SORTED_BY_WEIGHT);
 
         /* cleanup */
         tr_free (pool);
@@ -1165,6 +1169,9 @@ pieceListResortPiece (Torrent * t, struct weighted_piece * p)
     bool isSorted = true;
 
     if (p == NULL)
+        return;
+
+    if (t->tor->sequentialOrder)
         return;
 
     /* is the torrent already sorted? */
@@ -1348,8 +1355,18 @@ tr_peerMgrGetNextRequests (tr_torrent           * tor,
     if (t->pieces == NULL)
         pieceListRebuild (t);
 
-    if (t->pieceSortState != PIECES_SORTED_BY_WEIGHT)
-        pieceListSort (t, PIECES_SORTED_BY_WEIGHT);
+    // TODO: replace sequentialOrder with sortMode
+    if (tor->sequentialOrder)
+    {
+      if (t->pieceSortState != PIECES_SORTED_BY_INDEX)
+          // TODO: check how often it gets here (someone resorts)
+          pieceListSort (t, PIECES_SORTED_BY_INDEX);
+    }
+    else
+    {
+      if (t->pieceSortState != PIECES_SORTED_BY_WEIGHT)
+          pieceListSort (t, PIECES_SORTED_BY_WEIGHT);
+    }
 
     assertReplicationCountIsExact (t);
     assertWeightedPiecesAreSorted (t);
@@ -1432,7 +1449,7 @@ tr_peerMgrGetNextRequests (tr_torrent           * tor,
     /* In most cases we've just changed the weights of a small number of pieces.
      * So rather than qsort ()ing the entire array, it's faster to apply an
      * adaptive insertion sort algorithm. */
-    if (got > 0)
+    if (!tor->sequentialOrder && got > 0)
     {
         /* not enough requests || last piece modified */
         if (i == t->pieceCount) --i;

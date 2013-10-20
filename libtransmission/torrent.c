@@ -833,6 +833,8 @@ torrentInit (tr_torrent * tor, const tr_ctor * ctor)
 
     tor->finishedSeedingByIdle = false;
 
+    tor->sequentialOrder = false;
+
     tr_peerMgrAddTorrent (session->peerMgr, tor);
 
     assert (!tor->downloadedCur);
@@ -3327,6 +3329,12 @@ tr_torrentSetQueueStartCallback (tr_torrent * torrent, void (*callback)(tr_torre
 {
     torrent->queue_started_callback = callback;
     torrent->queue_started_user_data = user_data;
+}
+
+void
+tr_torrentSetSequentialOrder (tr_torrent * torrent, bool value)
+{
+    torrent->sequentialOrder = value;
 }
 
 

@@ -788,6 +788,8 @@ void tr_torrentsQueueMoveDown (tr_torrent ** torrents, int torrentCount);
 /** @brief Convenience function for moving a batch of torrents to the back of their queue (s) */
 void tr_torrentsQueueMoveBottom (tr_torrent ** torrents, int torrentCount);
 
+void tr_torrentSetSequentialOrder(tr_torrent *, bool);
+
 /**
 **/
 
@@ -1758,6 +1760,7 @@ typedef struct tr_file
     tr_piece_index_t  firstPiece;  /* We need pieces [firstPiece... */
     tr_piece_index_t  lastPiece;   /* ...lastPiece] to dl this file */
     uint64_t          offset;      /* file begins at the torrent's nth byte */
+    int8_t            sequentialIndex /* 0-254 defines order files to be downloaded, 255: unordered */
 }
 tr_file;
 

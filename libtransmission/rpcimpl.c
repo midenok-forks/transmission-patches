@@ -1123,6 +1123,8 @@ torrentSet (tr_session               * session,
             errmsg = removeTrackers (tor, trackers);
         if (!errmsg && tr_bencDictFindList (args_in, "trackerReplace", &trackers))
             errmsg = replaceTrackers (tor, trackers);
+        if (tr_bencDictFindBool (args_in, "sequentialOrder", &boolVal))
+            tr_torrentSetSequentialOrder(tor, boolVal);
         notify (session, TR_RPC_TORRENT_CHANGED, tor);
     }
 
